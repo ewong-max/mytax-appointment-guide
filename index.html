@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MyTax Appointment Guide</title>
+<style>
+  :root{
+    --bg:#f4f6f9; --card:#ffffff; --ink:#1c2533; --muted:#5b6678; --line:#e1e6ee;
+    --brand:#1f4e8c; --brand-soft:#e8f0fa; --accent:#f0962e; --accent-soft:#fff3e4;
+    --ok:#1e7a4f; --ok-soft:#e6f4ec; --warn:#9a5b00; --warn-soft:#fff6e0;
+    --shadow:0 1px 2px rgba(20,30,50,.06),0 4px 16px rgba(20,30,50,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#11161e; --card:#1a212c; --ink:#e6ebf2; --muted:#9aa6b8; --line:#2a3342;
+      --brand:#7fb0ef; --brand-soft:#1d2b40; --accent:#f3a64c; --accent-soft:#2e2416;
+      --ok:#6fcf9e; --ok-soft:#173226; --warn:#f0c46a; --warn-soft:#2e2814;
+      --shadow:0 1px 2px rgba(0,0,0,.3);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 16px 64px}
+
+  header.top{background:var(--brand);color:#fff;padding:28px 0 72px}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) header.top{background:#16263d}}
+  .brandrow{display:flex;align-items:center;gap:14px}
+  .brandrow img{width:46px;height:auto;background:#fff;border-radius:10px;padding:5px}
+  .brandrow .firm{font-weight:600;letter-spacing:.3px;opacity:.95}
+  header h1{margin:18px 0 6px;font-size:clamp(24px,4.4vw,34px);line-height:1.2}
+  header p{margin:0;opacity:.85;max-width:640px}
+
+  .tabs{display:flex;gap:10px;margin-top:-44px;flex-wrap:wrap}
+  .tab{flex:1 1 260px;text-align:left;border:0;cursor:pointer;background:var(--card);color:var(--ink);
+       border-radius:14px;padding:14px 18px;box-shadow:var(--shadow);font:inherit;border:2px solid transparent}
+  .tab small{display:block;color:var(--muted);font-size:13px}
+  .tab b{font-size:17px}
+  .tab[aria-selected="true"]{border-color:var(--accent)}
+  .tab .n{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-size:14px;margin-right:8px;font-weight:700}
+
+  .panel{display:none;margin-top:24px}
+  .panel.active{display:block}
+
+  .callout{border-radius:12px;padding:14px 18px;margin:18px 0;border-left:5px solid}
+  .callout.info{background:var(--brand-soft);border-color:var(--brand)}
+  .callout.warn{background:var(--warn-soft);border-color:var(--accent)}
+  .callout.ok{background:var(--ok-soft);border-color:var(--ok)}
+  .callout h3{margin:0 0 6px;font-size:16px}
+  .callout ul{margin:6px 0 0;padding-left:20px}
+  .callout p{margin:0}
+
+  .step{background:var(--card);border-radius:16px;box-shadow:var(--shadow);margin:18px 0;overflow:hidden}
+  .step-head{display:flex;gap:14px;align-items:flex-start;padding:18px 20px 6px}
+  .num{flex:0 0 auto;width:38px;height:38px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:700;font-size:17px}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .num{color:#11161e}}
+  .step h2{margin:5px 0 0;font-size:19px;line-height:1.35}
+  .step-body{padding:4px 20px 20px 72px}
+  .step-body ul,.step-body ol{margin:6px 0 0;padding-left:20px}
+  .step-body li{margin:4px 0}
+  @media (max-width:560px){.step-body{padding-left:20px}}
+
+  figure{margin:14px 0 0}
+  figure img{display:block;width:100%;height:auto;border-radius:10px;border:1px solid var(--line);cursor:zoom-in;background:#fff}
+  figcaption{font-size:13px;color:var(--muted);margin-top:6px}
+
+  .field{display:grid;grid-template-columns:minmax(150px,220px) 1fr;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:10px}
+  .field div{padding:9px 12px;border-bottom:1px solid var(--line)}
+  .field div:nth-last-child(-n+2){border-bottom:0}
+  .field div:nth-child(odd){background:var(--brand-soft);font-weight:600;font-size:14px}
+  @media (max-width:520px){.field{grid-template-columns:1fr}.field div:nth-child(odd){border-bottom:0;padding-bottom:2px}}
+
+  code,.mono{font-family:Consolas,"Cascadia Mono",monospace;background:var(--accent-soft);padding:1px 6px;border-radius:5px;font-size:.95em}
+  .copy{margin-left:6px;font:12px/1 inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:6px;padding:4px 8px;cursor:pointer;vertical-align:middle}
+  .agent{background:var(--accent-soft);border-bottom:2px dashed var(--accent);padding:0 4px;font-weight:600}
+  .kbd{display:inline-block;background:var(--brand);color:#fff;border-radius:6px;padding:0 8px;font-size:.9em;font-weight:600}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .kbd{color:#11161e}}
+
+  .section-title{margin:40px 0 4px;font-size:22px}
+  .next{display:flex;justify-content:flex-end;margin-top:24px}
+  .next button{border:0;background:var(--accent);color:#fff;font:600 15px inherit;padding:12px 20px;border-radius:10px;cursor:pointer}
+
+  footer{color:var(--muted);font-size:13px;text-align:center;margin-top:48px}
+
+  #lb{position:fixed;inset:0;background:rgba(10,14,20,.88);display:none;align-items:center;justify-content:center;padding:16px;z-index:10;cursor:zoom-out}
+  #lb.open{display:flex}
+  #lb img{max-width:100%;max-height:100%;border-radius:8px;background:#fff}
+
+  @media print{
+    body{background:#fff}
+    header.top{background:#fff;color:#000;padding:0 0 10px;border-bottom:2px solid #000}
+    .tabs,.next,.copy{display:none}
+    .panel{display:block !important;page-break-before:always}
+    .panel:first-of-type{page-break-before:auto}
+    .step{box-shadow:none;border:1px solid #ccc;break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brandrow"><img src="images/yk-logo.webp" alt=""><span class="firm">YK Corporate Consultants Sdn Bhd</span></div>
+    <h1>MyTax Appointment Guide</h1>
+    <p>Two short procedures in the LHDN MyTax portal: first register the director's role for the company, then appoint us as the company's tax agent.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="true" data-target="p-director">
+      <span class="n">1</span><b>Register as Company Director</b>
+      <small>Pengarah Syarikat role in MyTax</small>
+    </button>
+    <button class="tab" role="tab" aria-selected="false" data-target="p-agent">
+      <span class="n">2</span><b>Appoint Us as Tax Agent</b>
+      <small>Electronic filing power for YKCC</small>
+    </button>
+  </div>
+
+  <!-- ================= DIRECTOR ================= -->
+  <section class="panel active" id="p-director" role="tabpanel">
+    <div class="callout info">
+      <h3>Register role as company director in the MyTax portal</h3>
+      <p>Do this once per company. It links the director's personal MyTax account to the company so the director can act on the company's behalf, including appointing a tax agent in Part 2.</p>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><div class="num">1</div><h2>Log in to the director's MyTax account</h2></div>
+      <div class="step-body">
+        <p>Go to <a href="https://mytax.hasil.gov.my" target="_blank" rel="noopener">mytax.hasil.gov.my</a>, choose the ID type, enter the director's identification number, and click <span class="kbd">Hantar</span>. Then enter the password.</p>
+        <figure><img loading="lazy" src="images/director-1.webp" alt="MyTax login page"><figcaption>MyTax login page</figcaption></figure>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><div class="num">2</div><h2>Select <span class="mono">Profil</span></h2></div>
+      <div class="step-body">
+        <p>On the dashboard, click the <span class="kbd">Profil</span> button at the top right.</p>
+        <figure><img loading="lazy" src="images/director-2.webp" alt="MyTax dashboard with Profil button"><figcaption>Dashboard: the Profil button is next to "Paparan Nombor Bil"</figcaption></figure>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><div class="num">3</div><h2>Open the <span class="mono">Permohonan Peranan</span> tab and fill in the form</h2></div>
+      <div class="step-body">
+        <div class="field">
+          <div>Jenis Permohonan</div><div>Permohonan Baharu</div>
+          <div>Jenis Peranan</div><div>Pengarah Syarikat</div>
+          <div>TIN Syarikat</div><div>Enter the company's C number <b>without the "C"</b> and add <b>0</b> at the end.<br><small>Example: C 1234567890 → <code>12345678900</code></small></div>
+          <div>Dokumen Sokongan</div><div>Click <span class="kbd">Muat Naik</span> and upload <b>Form 49</b> or the <b>Superform</b> (max 2MB; .jpg, .png or .pdf)</div>
+        </div>
+        <p style="margin-top:12px">Then click <span class="kbd">Hantar</span>.</p>
+        <figure><img loading="lazy" src="images/director-3.webp" alt="Permohonan Peranan form"><figcaption>Permohonan Peranan form</figcaption></figure>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><div class="num">4</div><h2>Wait for approval</h2></div>
+      <div class="step-body">
+        <p>The application status appears at the bottom of the same page in MyTax, under <b>List of Role Applications</b>. Once the status shows <b>Accepted</b>, the director can log in on behalf of the company.</p>
+        <figure><img loading="lazy" src="images/director-4.webp" alt="List of Role Applications showing Accepted status"><figcaption>Role application status: Accepted</figcaption></figure>
+      </div>
+    </div>
+
+    <div class="callout ok">
+      <h3>Optional: appoint a Wakil (staff representative)</h3>
+      <p>A Wakil (staff or admin) can also be appointed, so that they can log in to the company's MyTax account too. Under <span class="kbd">Profil</span>, open the <b>Pelantikan Wakil</b> tab, choose the ID type, enter the staff member's ID number and click <span class="kbd">Hantar</span>.</p>
+      <figure><img loading="lazy" src="images/director-5.webp" alt="Lantikan Wakil Syarikat page"><figcaption>Pelantikan Wakil: Lantikan Wakil Syarikat</figcaption></figure>
+    </div>
+
+    <div class="next"><button data-goto="p-agent">Next: Appoint Us as Tax Agent →</button></div>
+  </section>
+
+  <!-- ================= TAX AGENT ================= -->
+  <section class="panel" id="p-agent" role="tabpanel">
+    <div class="callout info">
+      <h3>How to appoint us as your tax agent in MyTax</h3>
+      <p>Dear Client, please follow the steps below to appoint YK Corporate Consultants Sdn Bhd as your company's tax agent.</p>
+    </div>
+
+    <div class="callout warn">
+      <h3>What you need before appointment</h3>
+      <ul>
+        <li>The director's MyTax login details (IC number and password).</li>
+        <li>The <b>role</b> of Company's Director / Organization Administrator has been approved in the company's MyTax account (see <a href="#" data-goto="p-director">Part 1</a>).</li>
+        <li>Our firm's TIN: <code>10307936100</code><button class="copy" data-copy="10307936100">Copy</button></li>
+        <li>The licensed tax agent's name, as informed by our PIC: <span class="agent">[NAME]</span></li>
+      </ul>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><div class="num">1</div><h2>Log in to the director's MyTax account and select the company</h2></div>
+      <div class="step-body">
+        <ul>
+          <li>Log in to MyTax (<a href="https://mytax.hasil.gov.my" target="_blank" rel="noopener">https://mytax.hasil.gov.my</a>) with your own IC number and password.</li>
+          <li>In <b>Role Selection</b>, click <b>Directors of the company / Organization Administrator</b>.</li>
+          <li>Choose your company from the list.</li>
+        </ul>
+        <figure><img loading="lazy" src="images/taxagent-1.webp" alt="Role Selection dialog"><figcaption>Role Selection dialog</figcaption></figure>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><div class="num">2</div><h2>Go to the tax agent appointment page</h2></div>
+      <div class="step-body">
+        <ul>
+          <li>Click the <b>Profile</b> icon (orange person icon) at the top right.</li>
+          <li>Click the <b>Appoint a Tax Agent</b> tab.</li>
+          <li>Your company's TIN, registration number and name appear automatically. Please check that they are correct.</li>
+        </ul>
+        <figure><img loading="lazy" src="images/taxagent-2.webp" alt="Appoint a Tax Agent tab"><figcaption>Profile icon and the Appoint a Tax Agent tab</figcaption></figure>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><div class="num">3</div><h2>Key in our firm's TIN and choose the licensed tax agent</h2></div>
+      <div class="step-body">
+        <div class="field">
+          <div>Firm TIN</div><div><code>10307936100</code><button class="copy" data-copy="10307936100">Copy</button></div>
+          <div>Firm Name</div><div>YK CORPORATE CONSULTANTS S/B<br><small>MyTax hides some letters. This is normal.</small></div>
+          <div>Tax Agent Name</div><div>Choose <span class="agent">[NAME]</span></div>
+        </div>
+        <figure><img loading="lazy" src="images/taxagent-3.webp" alt="Firm TIN and Tax Agent Name fields"><figcaption>Firm TIN and tax agent dropdown</figcaption></figure>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><div class="num">4</div><h2>Tick both boxes and submit</h2></div>
+      <div class="step-body">
+        <ul>
+          <li>Tick <b>Filing a return</b>. This allows us to submit your company's tax return forms electronically.</li>
+          <li>Tick <b>View profile, MyTax status including e-Ledger, PCB, Refund and Instalment (if any)</b>. This allows us to check your tax account status.</li>
+          <li>Read the declaration, then click <span class="kbd">Submit</span> at the bottom of the page.</li>
+        </ul>
+        <figure><img loading="lazy" src="images/taxagent-4.webp" alt="Declaration checkboxes ticked"><figcaption>Both boxes ticked</figcaption></figure>
+      </div>
+    </div>
+
+    <div class="callout ok">
+      <h3>Check the appointment status</h3>
+      <p>The appointment status appears at the bottom of the same page. Once approved, the status shows <b>Diluluskan</b>, with access to Form, Ledger and Profile.</p>
+      <figure><img loading="lazy" src="images/taxagent-5.webp" alt="Appointment status table showing Diluluskan"><figcaption>Appointment approved</figcaption></figure>
+    </div>
+  </section>
+
+  <footer>YK Corporate Consultants Sdn Bhd · If you have any questions, please contact your PIC.</footer>
+</main>
+
+<div id="lb" aria-hidden="true"><img alt=""></div>
+
+<script>
+  // Tabs
+  function show(id){
+    document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===id));
+    document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',t.dataset.target===id));
+    try{history.replaceState(null,'','#'+id)}catch(e){}
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  document.querySelectorAll('[data-target]').forEach(b=>b.onclick=()=>show(b.dataset.target));
+  document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=e=>{e.preventDefault();show(b.dataset.goto)});
+  if(location.hash==='#p-agent'||location.hash==='#p-director') show(location.hash.slice(1));
+
+  // Tax agent name: open the page with ?agent=NAME to fill in [NAME]
+  const agent=new URLSearchParams(location.search).get('agent');
+  if(agent) document.querySelectorAll('.agent').forEach(el=>el.textContent=agent.toUpperCase());
+
+  // Copy buttons
+  document.querySelectorAll('.copy').forEach(b=>b.onclick=async()=>{
+    try{await navigator.clipboard.writeText(b.dataset.copy);b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1500)}catch(e){}
+  });
+
+  // Image zoom
+  const lb=document.getElementById('lb'), lbImg=lb.querySelector('img');
+  document.querySelectorAll('figure img').forEach(i=>i.onclick=()=>{lbImg.src=i.src;lb.classList.add('open')});
+  lb.onclick=()=>lb.classList.remove('open');
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')lb.classList.remove('open')});
+</script>
+</body>
+</html>
